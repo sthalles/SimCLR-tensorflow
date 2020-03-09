@@ -4,7 +4,7 @@
 
 ### Blog post with full documentation: [Exploring SimCLR: A Simple Framework for Contrastive Learning of Visual Representations](https://sthalles.github.io/simple-self-supervised-learning/)
 
-#### For a Pytorch Implementation: [Tensorflow SimCLR](https://github.com/sthalles/SimCLR)
+#### For a Pytorch Implementation: [PyTorch SimCLR](https://github.com/sthalles/SimCLR)
 
 ![Image of SimCLR Arch](https://sthalles.github.io/assets/contrastive-self-supervised/cover.png)
 
