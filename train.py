@@ -5,16 +5,18 @@ import yaml
 
 print(tf.__version__)
 from models.cnn_small import SmallCNN
+from models.resnet_simclr import ResNetSimCLR
 import tensorflow_datasets as tfds
 from utils.losses import _dot_simililarity_dim1 as sim_func_dim1, _dot_simililarity_dim2 as sim_func_dim2
 from utils.helpers import get_negative_mask, gaussian_filter
-from augmentation.transforms import read_images, distort_simclr
+from augmentation.transforms import read_images, distort_simclr, read_record
 import matplotlib.pyplot as plt
 
 config = yaml.load(open("./config.yaml", "r"), Loader=yaml.FullLoader)
+input_shape = eval(config['input_shape'])
 
-train_dataset = tfds.load(name="cifar10", split="train")
-train_dataset = train_dataset.map(read_images, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+train_dataset = tf.data.TFRecordDataset('./data/tfrecords/train.tfrecords')
+train_dataset = train_dataset.map(lambda x: read_record(x, input_shape), num_parallel_calls=tf.data.experimental.AUTOTUNE)
 train_dataset = train_dataset.map(distort_simclr, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 train_dataset = train_dataset.map(gaussian_filter, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 train_dataset = train_dataset.repeat(config['epochs'])
@@ -25,8 +27,8 @@ train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 criterion = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.SUM)
 optimizer = tf.keras.optimizers.Adam(3e-4)
 
-model = SmallCNN(out_dim=config['out_dim'])
-# model = ResNetSimCLR(input_shape=(32, 32, 3), out_dim=config['out_dim'])
+# model = SmallCNN(out_dim=config['out_dim'])
+model = ResNetSimCLR(input_shape=input_shape, out_dim=config['out_dim'])
 
 # Mask to remove positive examples from the batch of negative samples
 negative_mask = get_negative_mask(config['batch_size'])
@@ -72,7 +74,8 @@ def train_step(xis, xjs):
             l_neg = tf.reshape(l_neg, (config['batch_size'], -1))
             l_neg /= config['temperature']
 
-            assert l_neg.shape == (config['batch_size'], 2 * (config['batch_size'] - 1)), "Shape of negatives not expected." + str(
+            assert l_neg.shape == (
+                config['batch_size'], 2 * (config['batch_size'] - 1)), "Shape of negatives not expected." + str(
                 l_neg.shape)
             logits = tf.concat([l_pos, l_neg], axis=1)  # [N,K+1]
             loss += criterion(y_pred=logits, y_true=labels)
@@ -86,13 +89,13 @@ def train_step(xis, xjs):
 
 
 for xis, xjs in train_dataset:
-    print(tf.reduce_min(xis), tf.reduce_max(xjs))
-    fig, axs = plt.subplots(nrows=2, ncols=2, constrained_layout=False)
-    axs[0, 0].imshow(xis[0])
-    axs[0, 1].imshow(xis[1])
-    axs[1, 0].imshow(xis[2])
-    axs[1, 1].imshow(xis[3])
-    plt.show()
+    # print(tf.reduce_min(xis), tf.reduce_max(xjs))
+    # fig, axs = plt.subplots(nrows=2, ncols=2, constrained_layout=False)
+    # axs[0, 0].imshow(xis[0])
+    # axs[0, 1].imshow(xis[1])
+    # axs[1, 0].imshow(xis[2])
+    # axs[1, 1].imshow(xis[3])
+    # plt.show()
 
     train_step(xis, xjs)
 

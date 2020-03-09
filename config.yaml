@@ -5,3 +5,4 @@ temperature: 0.5
 base_convnet: "resnet18" # one of: "resnet18 or resnet50"
 use_cosine_similarity: True
 epochs: 10
+input_shape: (96,96,3)
