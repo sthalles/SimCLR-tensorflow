@@ -6,7 +6,7 @@ def ResNetSimCLR(input_shape, out_dim, base_model='resnet18'):
 
     base_encoder = tf.keras.applications.ResNet50(include_top=False, weights=None, input_tensor=None,
                                                   input_shape=None, pooling='avg')
-
+    base_encoder.training = True
     h = base_encoder(inputs)
 
     # projection head
