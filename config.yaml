@@ -1,0 +1,8 @@
+batch_size: 4
+out_dim: 3
+s: 1
+temperature: 0.5
+base_convnet: "resnet18" # one of: "resnet18 or resnet50"
+use_cosine_similarity: True
+epochs: 1
+num_workers: 4
