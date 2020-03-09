@@ -16,10 +16,16 @@ def color_distortion(image, s=1.0):
         return x
 
     def color_drop(x):
-        image = tf.image.rgb_to_grayscale(image)
-        image = tf.tile(image, [1, 1, 3])
+        x = tf.image.rgb_to_grayscale(x)
+        x = tf.tile(x, [1, 1, 3])
+        return x
 
+    rand_ = tf.random.uniform(shape=(), minval=0, maxval=1)
     # randomly apply transformation with probability p.
-    image = random_apply(color_jitter, image, p=0.8)
-    image = random_apply(color_drop, image, p=0.2)
-    return
+    if rand_ < 0.8:
+        image = color_jitter(image)
+
+    rand_ = tf.random.uniform(shape=(), minval=0, maxval=1)
+    if rand_ < 0.2:
+        image = color_drop(image)
+    return image
