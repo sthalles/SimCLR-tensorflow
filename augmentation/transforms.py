@@ -30,10 +30,6 @@ def read_record(record, input_shape):
 
 def distort_with_rand_aug(image):
     image = tf.cast(image, dtype=tf.uint8)
-    v1 = distort_image_with_randaugment(image, num_layers=2, magnitude=10)
-    v2 = distort_image_with_randaugment(image, num_layers=2, magnitude=10)
-    return v1 / 255., v2 / 255.
-
-
-def read_images(features):
-    return features['image']
+    v1 = distort_image_with_randaugment(image, num_layers=3, magnitude=5)
+    v2 = distort_image_with_randaugment(image, num_layers=3, magnitude=5)
+    return tf.cast(v1, tf.float32) / 255., tf.cast(v2, tf.float32) / 255.

@@ -1,8 +1,7 @@
-batch_size: 32
-out_dim: 128
+batch_size: 128
+out_dim: 256
 s: 1
 temperature: 0.5
-base_convnet: "resnet18" # one of: "resnet18 or resnet50"
 use_cosine_similarity: True
-epochs: 10
+epochs: 30
 input_shape: (96,96,3)
