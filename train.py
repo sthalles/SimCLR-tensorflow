@@ -25,7 +25,7 @@ input_shape = eval(config['input_shape'])
 train_dataset = tf.data.TFRecordDataset('./data/tfrecords/train.tfrecords')
 train_dataset = train_dataset.map(lambda x: read_record(x, input_shape),
                                   num_parallel_calls=tf.data.experimental.AUTOTUNE)
-train_dataset = train_dataset.map(distort_with_rand_aug, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+train_dataset = train_dataset.map(distort_simclr, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 train_dataset = train_dataset.map(gaussian_filter, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 train_dataset = train_dataset.repeat(config['epochs'])
 train_dataset = train_dataset.shuffle(4096)
